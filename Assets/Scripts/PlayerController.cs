@@ -7,9 +7,10 @@ public class PlayerController : MonoBehaviour
 {
     public float velocidad;
     public float fuerza;
-    private float xLimite = 20f;
+    //private float xLimite = 20f;
     private Rigidbody2D fisica;
     private SpriteRenderer orientacion;
+    private Animator animacionJugador;
 
     //public GameObject proyectil;
 
@@ -18,6 +19,7 @@ public class PlayerController : MonoBehaviour
     {
         fisica = GetComponent<Rigidbody2D>();
         orientacion = GetComponent<SpriteRenderer>();
+        animacionJugador = GetComponent<Animator>();
     }
     // Update is called once per frame
     void Update()
@@ -35,10 +37,12 @@ public class PlayerController : MonoBehaviour
         //modifica el flix en funcion a donde mira
         if (fisica.velocity.x < 0f) orientacion.flipX = true;
         else if (fisica.velocity.x > 0f) orientacion.flipX = false;
+
+        AnimarJugador();
         // Limitar el movimiento izquierda-derecha
-        Vector3 posicion = transform.position;
-        posicion.x = Mathf.Clamp(posicion.x, -xLimite, xLimite);
-        transform.position = posicion;
+        //Vector3 posicion = transform.position;
+        //posicion.x = Mathf.Clamp(posicion.x, -xLimite, xLimite);
+        //transform.position = posicion;
 
         /*if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -54,8 +58,31 @@ public class PlayerController : MonoBehaviour
     }
 
     public void FinDelJuego()
-    {   
-        Time.timeScale = 0f;
+    {
+
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        //Time.timeScale = 0f;
+    }
+
+    private void AnimarJugador()
+    {
+        Debug.Log("entrando animacion");
+        if (fisica.velocity.x == 0 && fisica.velocity.y == 0){
+            animacionJugador.Play("jugador paradp");}
+        else if (fisica.velocity.x != 0 && fisica.velocity.y == 0){
+            animacionJugador.Play("jugador-corriendo");}
+        else if (!TocarSuelo()){
+            animacionJugador.Play("jugador-saltando");}
     }
 }
+
+
+
+
+
+
+
+
+
+
+

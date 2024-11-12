@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - jugador
   layers:
   - Default
   - TransparentFX
@@ -40,4 +41,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: timeSet
+    uniqueID: 3993185943
+    locked: 0
+  - name: New Layer 2
+    uniqueID: 2716916551
     locked: 0
