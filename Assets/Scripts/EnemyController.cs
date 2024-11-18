@@ -1,62 +1,70 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
-    public float velocidad;
-    private Vector3 posicionArriba;
-    public Vector3 posicionAbajo;
-    private bool subiendo;
-    // Puedes definir la distancia que quieres que el enemigo suba desde su posición inicial
-    public float distanciaSubida = 3.0f;
+    //private float xLimite = 20f;
 
-    // Start is called before the first frame update
+    private SpriteRenderer orientacion;
+    private Animator animacionEnemy;
+    [SerializeField] private float speed = 5f;  // Velocidad del enemigo
+    [SerializeField] private bool moveOnX = true;  // Controla si se mueve en el eje X o Y, editable desde el Inspector
+    private float direction = 1f;  // Dirección inicial (1 para adelante, -1 para atrás)
+    [SerializeField] private float boundaryX = 10f;  // Límite en el eje X
+    [SerializeField] private float boundaryY = 5f;  
+    // Límite en el eje Y
+ // Límite en el eje Y
+
+
     void Start()
     {
-        // Posición inicial
-        Vector3 posicionInicial = transform.position;
-
-        // Establecemos la posición de subida en relación a la posición inicial
-        posicionArriba = posicionInicial + new Vector3(0, distanciaSubida, 0);
-
-        // La posición de bajada puede ser establecida desde el Inspector o aquí directamente
-        if (posicionAbajo == Vector3.zero) // Opcionalmente solo si no está definida en el inspector
-        {
-            posicionAbajo = posicionInicial;
-        }
-
-        // Empezamos moviendo hacia arriba
-        subiendo = true;
+        
+        orientacion = GetComponent<SpriteRenderer>();
+        animacionEnemy = GetComponent<Animator>();
     }
-
-    // Update is called once per frame
     void Update()
     {
-        // Determinamos hacia dónde moverse
-        Vector3 posicionDestino = subiendo ? posicionArriba : posicionAbajo;
-
-        // Movemos el objeto hacia la posición destino
-        transform.position = Vector3.MoveTowards(transform.position, posicionDestino, velocidad * Time.deltaTime);
-
-        // Cambiamos la dirección cuando se alcanza una de las posiciones límite
-        if (transform.position == posicionArriba)
-        {
-            subiendo = false;
-        }
-        else if (transform.position == posicionAbajo)
-        {
-            subiendo = true;
-        }
-        
+        Move();
+        AnimarEnemigo();
     }
 
-    private void OnCollisionEnter2D(Collision2D colision){
-        if(colision.gameObject.CompareTag("jugador")){
-            Debug.Log("1 vida menos");
-            
-            colision.gameObject.GetComponent<PlayerController>().FinDelJuego();
+    // Método para mover el enemigo en el eje seleccionado
+    private void Move()
+    {
+        // Movimiento en el eje X
+        if (moveOnX)
+        {
+            transform.position += new Vector3(direction * speed * Time.deltaTime, 0, 0);
+
+            // Cambia de dirección al alcanzar el límite en X
+            if (transform.position.x >= boundaryX || transform.position.x <= -boundaryX)
+            {
+                orientacion.flipX = true;
+                direction *= -1;
+                
+            }
+        }
+        // Movimiento en el eje Y
+        else
+        {
+            transform.position += new Vector3(0, direction * speed * Time.deltaTime, 0);
+
+            // Cambia de dirección al alcanzar el límite en Y
+            if (transform.position.y >= boundaryY || transform.position.y <= -boundaryY)
+            {
+                direction *= -1;
+            }
+        }
+    }
+
+    private void AnimarEnemigo()
+    {
+        Debug.Log("entrando animacion");
+
+        if (moveOnX)
+        {
+            animacionEnemy.Play("cagrejo-andando");
         }
     }
 }
+
+
