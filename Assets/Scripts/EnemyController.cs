@@ -1,72 +1,44 @@
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
-    //private float xLimite = 20f;
 
-    private SpriteRenderer orientacion;
-    private Animator animacionEnemy;
-    [SerializeField] private float speed = 5f;  // Velocidad del enemigo
-    [SerializeField] private bool moveOnX = true;  // Controla si se mueve en el eje X o Y, editable desde el Inspector
-    private float direction = 1f;  // Dirección inicial (1 para adelante, -1 para atrás)
-    [SerializeField] private float limiteX = 10f;  // Límite en el eje X
-    [SerializeField] private float limiteY = 5f;  
-    // Límite en el eje Y
- // Límite en el eje Y
+    [SerializeField] private float velocidad;
+    [SerializeField] private Transform controladorSuelo;
+    [SerializeField] private float distancia;
+    [SerializeField] private bool movimientoDerecha;
+    private Rigidbody2D rb;
 
 
     void Start()
     {
-        
-        orientacion = GetComponent<SpriteRenderer>();
-        animacionEnemy = GetComponent<Animator>();
+        //coge el rigidbody de nuestro personaje
+        rb = GetComponent<Rigidbody2D>();
     }
     void Update()
     {
-        Move();
-        AnimarEnemigo();
-    }
+        RaycastHit2D informacionSuelo = Physics2D.Raycast(controladorSuelo.position,Vector2.down,distancia);
+        rb.velocity = new Vector2(velocidad,rb.velocity.y);
 
-    // Método para mover el enemigo en el eje seleccionado
-    private void Move()
-    {
-        // Movimiento en el eje X
-        if (moveOnX)
+        if(informacionSuelo == false)
         {
-            if (transform.position.x >= limiteX || transform.position.x <= -limiteX)
-            {
-                orientacion.flipX = false;
-                direction *= -1;
-                
-            }
-            transform.position += new Vector3(direction * speed * Time.deltaTime, 0, 0);
-            orientacion.flipX = true;
-
-            // Cambia de dirección al alcanzar el límite en X
-            
-        }
-        // Movimiento en el eje Y
-        else
-        {
-            transform.position += new Vector3(0, direction * speed * Time.deltaTime, 0);
-
-            // Cambia de dirección al alcanzar el límite en Y
-            if (transform.position.y >= limiteY || transform.position.y <= -limiteY)
-            {
-                direction *= -1;
-            }
+            Girar();
         }
     }
 
-    private void AnimarEnemigo()
-    {
-        Debug.Log("entrando animacion");
-
-        if (moveOnX)
-        {
-            animacionEnemy.Play("cangrejo-andando");
-        }
+    private void Girar(){
+        movimientoDerecha = !movimientoDerecha;
+        transform.eulerAngles = new Vector3(0,transform.eulerAngles.y+180,0);
+        velocidad *= -1;
     }
+
+    private void onDrawGizmos(){
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(controladorSuelo.transform.position,controladorSuelo.transform.position + Vector3.down * distancia);
+    }
+
+
 }
 
 

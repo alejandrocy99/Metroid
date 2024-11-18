@@ -1,63 +1,101 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.PlayerLoop;
 using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
-    public float velocidad;
-    public float fuerza;
-    //private float xLimite = 20f;
-    private Rigidbody2D fisica;
-    private SpriteRenderer orientacion;
+    private Rigidbody2D rb2D;
+
+    [Header("movimiento")]
+    private float movimientoHorizontal;
+    [SerializeField] private float velocidadMovimiento;
+    [Range(0,0.3f)][SerializeField] private float suavizadorDeMovimiento;
+    private Vector3 velocidad  =Vector3.zero;
+    private bool mirandoDerecha;
+
+
+    [Header("salto")]
+    [SerializeField] private float fuerzaSalto;
+    [SerializeField] private LayerMask queEsSuelo;
+    [SerializeField] private Transform controladorSuelo;
+    [SerializeField] private Vector3 dimesionesCaja;
+    [SerializeField] private bool enSuelo;
+    private bool salto = false;
+
+
+
+
+
+
+
+
     private Animator animacionJugador;
     public int Nvidas;
-    private bool vulnerable; 
+    private bool vulnerable;
 
     //public GameObject proyectil;
 
 
     void Start()
     {
-        fisica = GetComponent<Rigidbody2D>();
-        orientacion = GetComponent<SpriteRenderer>();
+        rb2D = GetComponent<Rigidbody2D>();
         animacionJugador = GetComponent<Animator>();
     }
     // Update is called once per frame
     void Update()
     {
-        // Movimiento horizontal del jugador
-        float move = Input.GetAxis("Horizontal");
-        //transform.Translate(move, 0f, 0f);
-        fisica.velocity = new Vector2(move * velocidad, fisica.velocity.y);
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-
-            if (TocarSuelo()) fisica.AddForce(Vector2.up * fuerza, ForceMode2D.Impulse);
+        movimientoHorizontal = Input.GetAxis("Horizontal") * velocidadMovimiento;
+        animacionJugador.SetFloat("Horizontal",Mathf.Abs(movimientoHorizontal));
+        if(Input.GetButtonDown("Jump")){
+            salto =  true;
         }
-        //modifica el flix en funcion a donde mira
-        if (fisica.velocity.x < 0f) orientacion.flipX = true;
-        else if (fisica.velocity.x > 0f) orientacion.flipX = false;
+        
+    }
 
-        AnimarJugador();
-        // Limitar el movimiento izquierda-derecha
-        //Vector3 posicion = transform.position;
-        //posicion.x = Mathf.Clamp(posicion.x, -xLimite, xLimite);
-        //transform.position = posicion;
+    private void FixedUpdate(){
+        // es suelo mientra la caja que hemos creado toque el suelo
+        enSuelo  =Physics2D.OverlapBox(controladorSuelo.position,dimesionesCaja,0f,queEsSuelo);
+        //le decimos a animador que es en suelo
+        animacionJugador.SetBool("enSuelo", enSuelo);
+        //Mover
+        Mover(movimientoHorizontal * Time.fixedDeltaTime,salto);
 
-        /*if (Input.GetKeyDown(KeyCode.Space))
+        salto = false;
+    }
+
+    private void Mover(float mover,bool saltar){
+        //esto es para que cuando salte o caiga tenga la misma velocidad
+        Vector2 velocidadObjeto = new Vector2(mover,rb2D.velocity.y);
+        //suavizar el moviento a la hora de acelerar o frenar
+        rb2D.velocity = Vector3.SmoothDamp(rb2D.velocity,velocidadObjeto,ref velocidad,suavizadorDeMovimiento);
+
+        if (mover > 0 && !mirandoDerecha)
         {
-            Instantiate(proyectil, new Vector3(posicion.x, posicion.y, posicion.z), Quaternion.identity);            
-        }*/
+            Girar();
+        }else if(mover < 0 && mirandoDerecha)
+        {
+            Girar();
+        }
+        // si estamos en el suelo y presionamos saltar que salte
+        if(enSuelo && saltar){
+            enSuelo = false;
+            rb2D.AddForce(new Vector2(0f,fuerzaSalto));
+            animacionJugador.Play("jugador-saltando");
+        }
+    }
+
+    private void Girar(){
+        mirandoDerecha = !mirandoDerecha;
+        Vector3 escala = transform.localScale;
+        escala.x *= -1;
+        transform.localScale = escala;
     }
 
 
-    private bool TocarSuelo()
-    {
-        RaycastHit2D siTocA = Physics2D.Raycast(transform.position + new Vector3(0f, -2f, 0f), Vector2.down, 0.2f);
-        return siTocA.collider != null;
-    }
 
     public void FinDelJuego()
     {
@@ -66,35 +104,35 @@ public class PlayerController : MonoBehaviour
         //Time.timeScale = 0f;
     }
 
-    private void AnimarJugador()
-    {
-        Debug.Log("entrando animacion");
-        if (fisica.velocity.x == 0 && fisica.velocity.y == 0){
-            animacionJugador.Play("jugador paradp");}
-        else if (fisica.velocity.x != 0 && fisica.velocity.y == 0){
-            animacionJugador.Play("jugador-corriendo");}
-        else if (!TocarSuelo()){
-            animacionJugador.Play("jugador-saltando");}
-    }
+   
 
-    public void QuitarVidas(){
-        if(vulnerable){
+    public void QuitarVidas()
+    {
+        if (vulnerable)
+        {
             vulnerable = false;
             Nvidas--;
-        if (Nvidas == 0 )
-        {
-            FinDelJuego();
+            if (Nvidas == 0)
+            {
+                FinDelJuego();
+            }
+            Invoke("HacerVunerable", 1f);
+        //    rb2D. = Color.red;
         }
-        Invoke("HacerVunerable" , 1f);
-        orientacion.color = Color.red;
-        }
-        
+
     }
 
 
-    private void HacerVunerable(){
+    private void HacerVunerable()
+    {
         vulnerable = true;
-        orientacion.color = Color.white;
+      //  orientacion.color = Color.white;
+    }
+
+
+    private void OnDrawGizmos(){
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireCube(controladorSuelo.position,dimesionesCaja);
     }
 
 }
