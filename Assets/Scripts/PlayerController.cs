@@ -11,6 +11,8 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D fisica;
     private SpriteRenderer orientacion;
     private Animator animacionJugador;
+    public int Nvidas;
+    private bool vulnerable; 
 
     //public GameObject proyectil;
 
@@ -74,6 +76,27 @@ public class PlayerController : MonoBehaviour
         else if (!TocarSuelo()){
             animacionJugador.Play("jugador-saltando");}
     }
+
+    public void QuitarVidas(){
+        if(vulnerable){
+            vulnerable = false;
+            Nvidas--;
+        if (Nvidas == 0 )
+        {
+            FinDelJuego();
+        }
+        Invoke("HacerVunerable" , 1f);
+        orientacion.color = Color.red;
+        }
+        
+    }
+
+
+    private void HacerVunerable(){
+        vulnerable = true;
+        orientacion.color = Color.white;
+    }
+
 }
 
 

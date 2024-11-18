@@ -9,8 +9,8 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private float speed = 5f;  // Velocidad del enemigo
     [SerializeField] private bool moveOnX = true;  // Controla si se mueve en el eje X o Y, editable desde el Inspector
     private float direction = 1f;  // Dirección inicial (1 para adelante, -1 para atrás)
-    [SerializeField] private float boundaryX = 10f;  // Límite en el eje X
-    [SerializeField] private float boundaryY = 5f;  
+    [SerializeField] private float limiteX = 10f;  // Límite en el eje X
+    [SerializeField] private float limiteY = 5f;  
     // Límite en el eje Y
  // Límite en el eje Y
 
@@ -33,15 +33,17 @@ public class EnemyController : MonoBehaviour
         // Movimiento en el eje X
         if (moveOnX)
         {
-            transform.position += new Vector3(direction * speed * Time.deltaTime, 0, 0);
-
-            // Cambia de dirección al alcanzar el límite en X
-            if (transform.position.x >= boundaryX || transform.position.x <= -boundaryX)
+            if (transform.position.x >= limiteX || transform.position.x <= -limiteX)
             {
-                orientacion.flipX = true;
+                orientacion.flipX = false;
                 direction *= -1;
                 
             }
+            transform.position += new Vector3(direction * speed * Time.deltaTime, 0, 0);
+            orientacion.flipX = true;
+
+            // Cambia de dirección al alcanzar el límite en X
+            
         }
         // Movimiento en el eje Y
         else
@@ -49,7 +51,7 @@ public class EnemyController : MonoBehaviour
             transform.position += new Vector3(0, direction * speed * Time.deltaTime, 0);
 
             // Cambia de dirección al alcanzar el límite en Y
-            if (transform.position.y >= boundaryY || transform.position.y <= -boundaryY)
+            if (transform.position.y >= limiteY || transform.position.y <= -limiteY)
             {
                 direction *= -1;
             }
@@ -62,7 +64,7 @@ public class EnemyController : MonoBehaviour
 
         if (moveOnX)
         {
-            animacionEnemy.Play("cagrejo-andando");
+            animacionEnemy.Play("cangrejo-andando");
         }
     }
 }
