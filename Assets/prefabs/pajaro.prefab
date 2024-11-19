@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 6534246091057155630}
   - component: {fileID: 5199566665008048772}
   - component: {fileID: 9057699657426029439}
-  - component: {fileID: 5708527420909158488}
   - component: {fileID: 6864975790327576127}
   m_Layer: 0
   m_Name: pajaro
@@ -130,51 +129,6 @@ MonoBehaviour:
   - {fileID: 0}
   distanciaMinima: 0.2
   numeroAleatorio: 0
---- !u!61 &5708527420909158488
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2688641353870604665}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: -0.03832245, y: -0.21077347}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2.9375, y: 2}
-    newSize: {x: 2.9375, y: 2}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 1.9027939, y: 1.4634857}
-  m_EdgeRadius: 0
 --- !u!50 &6864975790327576127
 Rigidbody2D:
   serializedVersion: 4
