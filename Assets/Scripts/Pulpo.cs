@@ -8,29 +8,35 @@ public class Pulpo : MonoBehaviour
     [SerializeField] private Transform[] puntosMovimiento;
     [SerializeField] private float distanciaMinima;
     public int numeroAleatorio;
-     private SpriteRenderer spriteRenderer;
+    private SpriteRenderer spriteRenderer;
 
-    private void Start(){
+    private void Start()
+    {
         //EL NUMERO ALEATORIO ESTA ENTRE 0 Y EL NUMERO DE PUNTOS QUE TENGAMOS EN EL MAPA PARA QUE NO SE PASE
-        numeroAleatorio = Random.Range(0,puntosMovimiento.Length);
+        numeroAleatorio = Random.Range(0, puntosMovimiento.Length);
         spriteRenderer = GetComponent<SpriteRenderer>();
         Girar();
 
     }
 
-    private void Update(){
+    private void Update()
+    {
         //Se mueve desde la posicion en la que esta hasta  posicion aleatoria
-        transform.position = Vector2.MoveTowards(transform.position,puntosMovimiento[numeroAleatorio].position,velocidad * Time.deltaTime);
+        transform.position = Vector2.MoveTowards(transform.position, puntosMovimiento[numeroAleatorio].position, velocidad * Time.deltaTime);
 
-        if(Vector2.Distance(transform.position,puntosMovimiento[numeroAleatorio].position)<distanciaMinima){
-             numeroAleatorio = Random.Range(0,puntosMovimiento.Length);
-             Girar();
+        if (Vector2.Distance(transform.position, puntosMovimiento[numeroAleatorio].position) < distanciaMinima)
+        {
+            numeroAleatorio = Random.Range(0, puntosMovimiento.Length);
+            Girar();
         }
     }
-    private void Girar(){
-        if(transform.position.x < puntosMovimiento[numeroAleatorio].position.x){
+    private void Girar()
+    {
+        if (transform.position.x < puntosMovimiento[numeroAleatorio].position.x)
+        {
             spriteRenderer.flipX = true;
-        }else
+        }
+        else
         {
             spriteRenderer.flipX = false;
         }

@@ -13,8 +13,8 @@ public class PlayerController : MonoBehaviour
     [Header("movimiento")]
     private float movimientoHorizontal;
     [SerializeField] private float velocidadMovimiento;
-    [Range(0,0.3f)][SerializeField] private float suavizadorDeMovimiento;
-    private Vector3 velocidad  =Vector3.zero;
+    [Range(0, 0.3f)][SerializeField] private float suavizadorDeMovimiento;
+    private Vector3 velocidad = Vector3.zero;
     private bool mirandoDerecha;
 
 
@@ -49,46 +49,52 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         movimientoHorizontal = Input.GetAxis("Horizontal") * velocidadMovimiento;
-        animacionJugador.SetFloat("Horizontal",Mathf.Abs(movimientoHorizontal));
-        if(Input.GetButtonDown("Jump")){
-            salto =  true;
+        animacionJugador.SetFloat("Horizontal", Mathf.Abs(movimientoHorizontal));
+        if (Input.GetButtonDown("Jump"))
+        {
+            salto = true;
         }
-        
+
     }
 
-    private void FixedUpdate(){
+    private void FixedUpdate()
+    {
         // es suelo mientra la caja que hemos creado toque el suelo
-        enSuelo  =Physics2D.OverlapBox(controladorSuelo.position,dimesionesCaja,0f,queEsSuelo);
+        enSuelo = Physics2D.OverlapBox(controladorSuelo.position, dimesionesCaja, 0f, queEsSuelo);
         //le decimos a animador que es en suelo
         animacionJugador.SetBool("enSuelo", enSuelo);
         //Mover
-        Mover(movimientoHorizontal * Time.fixedDeltaTime,salto);
+        Mover(movimientoHorizontal * Time.fixedDeltaTime, salto);
 
         salto = false;
     }
 
-    private void Mover(float mover,bool saltar){
+    private void Mover(float mover, bool saltar)
+    {
         //esto es para que cuando salte o caiga tenga la misma velocidad
-        Vector2 velocidadObjeto = new Vector2(mover,rb2D.velocity.y);
+        Vector2 velocidadObjeto = new Vector2(mover, rb2D.velocity.y);
         //suavizar el moviento a la hora de acelerar o frenar
-        rb2D.velocity = Vector3.SmoothDamp(rb2D.velocity,velocidadObjeto,ref velocidad,suavizadorDeMovimiento);
+        rb2D.velocity = Vector3.SmoothDamp(rb2D.velocity, velocidadObjeto, ref velocidad, suavizadorDeMovimiento);
 
         if (mover > 0 && !mirandoDerecha)
         {
             Girar();
-        }else if(mover < 0 && mirandoDerecha)
+        }
+        else if (mover < 0 && mirandoDerecha)
         {
             Girar();
         }
         // si estamos en el suelo y presionamos saltar que salte
-        if(enSuelo && saltar){
+        if (enSuelo && saltar)
+        {
             enSuelo = false;
-            rb2D.AddForce(new Vector2(0f,fuerzaSalto));
+            rb2D.AddForce(new Vector2(0f, fuerzaSalto));
             animacionJugador.Play("jugador-saltando");
         }
     }
 
-    private void Girar(){
+    private void Girar()
+    {
         mirandoDerecha = !mirandoDerecha;
         Vector3 escala = transform.localScale;
         escala.x *= -1;
@@ -104,7 +110,7 @@ public class PlayerController : MonoBehaviour
         //Time.timeScale = 0f;
     }
 
-   
+
 
     public void QuitarVidas()
     {
@@ -117,7 +123,7 @@ public class PlayerController : MonoBehaviour
                 FinDelJuego();
             }
             Invoke("HacerVunerable", 1f);
-        //    rb2D. = Color.red;
+            //    rb2D. = Color.red;
         }
 
     }
@@ -126,13 +132,14 @@ public class PlayerController : MonoBehaviour
     private void HacerVunerable()
     {
         vulnerable = true;
-      //  orientacion.color = Color.white;
+        //  orientacion.color = Color.white;
     }
 
 
-    private void OnDrawGizmos(){
+    private void OnDrawGizmos()
+    {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireCube(controladorSuelo.position,dimesionesCaja);
+        Gizmos.DrawWireCube(controladorSuelo.position, dimesionesCaja);
     }
 
 }
