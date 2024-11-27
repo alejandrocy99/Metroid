@@ -1,54 +1,75 @@
-using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ControladorJuego : MonoBehaviour
 {
-    [SerializeField] private float tiempoMaximo; // Tiempo máximo para el temporizador
-    private float tiempoActual; // Tiempo actual en el temporizador
-    private bool tiempoActivado = false; // Indica si el temporizador está activado o no
-    private TextMeshProUGUI textMeshT; // Referencia al componente TextMeshProUGUI para mostrar el tiempo
+    [SerializeField] private List<GameObject> powerUps; // Lista de power-ups manualmente añadida
+
+
+    private int puntosPowerUps = 0; // Puntos totales de los power-ups
+    private Temporizador temporizador; // Referencia al temporizador
 
     private void Start()
     {
-        Debug.Log("hola"); // Mensaje para confirmar que el script se ha iniciado
-        textMeshT = GetComponent<TextMeshProUGUI>(); // Obtiene el componente TextMeshProUGUI
-        ACtivarTemporizador(); // Activa el temporizador al inicio (opcional, dependiendo del juego)
+        // Buscar el objeto Temporizador en la escena
+        temporizador = FindObjectOfType<Temporizador>();
+
+        if (temporizador == null)
+        {
+            Debug.LogError("No se encontró el Temporizador en la escena.");
+        }
+        else
+        {
+            Debug.Log("Temporizador encontrado correctamente.");
+        }
+
+        Debug.Log("Power-ups registrados manualmente: " + powerUps.Count);
     }
 
-    private void Update()
+    public void EliminarPowerUp(GameObject powerUp)
     {
-        if (tiempoActivado)
+        if (powerUps.Contains(powerUp))
         {
-            CambiarContador(); // Reduce el tiempo si el temporizador está activo
-            textMeshT.text = "TIME: " + Mathf.Max(0, Mathf.RoundToInt(tiempoActual)).ToString(); // Actualiza el texto del temporizador
+            powerUps.Remove(powerUp);
+            puntosPowerUps += powerUp.GetComponent<PowerUp>().cantidadPuntos; // Sumar los puntos del power-up
+            Debug.Log("Power-ups restantes: " + powerUps.Count);
+
+            if (powerUps.Count == 0)
+            {
+                Debug.Log("Todos los power-ups recogidos. Calculando puntuación total...");
+                CalcularPuntuacionTotal();
+                CambiarDeEscena();
+            }
         }
     }
 
-    // Resta el tiempo actual y gestiona el estado del temporizador
-    private void CambiarContador()
+    private void CalcularPuntuacionTotal()
     {
-        tiempoActual -= Time.deltaTime; // Reduce el tiempo según el tiempo transcurrido
-
-        if (tiempoActual <= 0) // Si el tiempo llega a 0, detiene el temporizador
+        if (temporizador != null)
         {
-            tiempoActual = 0; // Asegura que no haya valores negativos
-            tiempoActivado = false; // Detiene el temporizador
-            Debug.Log("derrota"); // Mensaje de derrota (puedes agregar lógica adicional aquí)
+            // Obtener el tiempo restante del temporizador
+            float tiempoRestante = temporizador.TiempoRestante();
+
+            Debug.Log("Tiempo restante para cálculo: " + tiempoRestante);
+
+            // Calcular puntos totales
+            float puntuacionTotal = puntosPowerUps + tiempoRestante;
+
+            Debug.Log("Puntuación total calculada: " + puntuacionTotal);
+            
+            GestorPuntuacion gestor = FindObjectOfType<GestorPuntuacion>();
+            gestor.PuntuacionTotal = puntuacionTotal;
+            // Puedes pasar esta puntuación a la siguiente escena
+        }
+        else
+        {
+            Debug.LogError("Temporizador es NULL en CalcularPuntuacionTotal.");
         }
     }
 
-    // Activa el temporizador e inicializa el tiempo actual
-    private void ACtivarTemporizador()
+    private void CambiarDeEscena()
     {
-        tiempoActual = tiempoMaximo; // Inicializa el tiempo actual al máximo
-        tiempoActivado = true; // Activa el temporizador
-    }
-
-    // Desactiva el temporizador
-    private void DesactivarTemporizador()
-    {
-        tiempoActivado = false; // Cambia el estado del temporizador a desactivado
+        SceneManager.LoadScene("PantallaFinal");
     }
 }

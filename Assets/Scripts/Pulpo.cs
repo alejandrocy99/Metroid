@@ -7,32 +7,36 @@ public class Pulpo : MonoBehaviour
     [SerializeField] private float velocidad;
     [SerializeField] private Transform[] puntosMovimiento;
     [SerializeField] private float distanciaMinima;
-    public int numeroAleatorio;
+    public int siguientePaso = 0;
     private SpriteRenderer spriteRenderer;
 
     private void Start()
     {
-        //EL NUMERO ALEATORIO ESTA ENTRE 0 Y EL NUMERO DE PUNTOS QUE TENGAMOS EN EL MAPA PARA QUE NO SE PASE
-        numeroAleatorio = Random.Range(0, puntosMovimiento.Length);
+        // El número aleatorio está entre 0 y el número de puntos que tengamos en el mapa
+        //siguientePaso = Random.Range(0, puntosMovimiento.Length);
         spriteRenderer = GetComponent<SpriteRenderer>();
         Girar();
-
     }
 
     private void Update()
     {
-        //Se mueve desde la posicion en la que esta hasta  posicion aleatoria
-        transform.position = Vector2.MoveTowards(transform.position, puntosMovimiento[numeroAleatorio].position, velocidad * Time.deltaTime);
+        // Se mueve desde la posición actual hasta una posición aleatoria
+        transform.position = Vector2.MoveTowards(transform.position, puntosMovimiento[siguientePaso].position, velocidad * Time.deltaTime);
 
-        if (Vector2.Distance(transform.position, puntosMovimiento[numeroAleatorio].position) < distanciaMinima)
+        if (Vector2.Distance(transform.position, puntosMovimiento[siguientePaso].position) < distanciaMinima)
         {
-            numeroAleatorio = Random.Range(0, puntosMovimiento.Length);
+           // siguientePaso = Random.Range(0, puntosMovimiento.Length);
+           siguientePaso += 1;
+           if(siguientePaso >= puntosMovimiento.Length){
+                siguientePaso = 0;
+           }
             Girar();
         }
     }
+
     private void Girar()
     {
-        if (transform.position.x < puntosMovimiento[numeroAleatorio].position.x)
+        if (transform.position.x < puntosMovimiento[siguientePaso].position.x)
         {
             spriteRenderer.flipX = true;
         }
@@ -42,4 +46,16 @@ public class Pulpo : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        // Detecta al jugador y quita vida
+        if (collision.CompareTag("Player"))
+        {
+            VidaJugador1 vidaJugador = collision.GetComponent<VidaJugador1>();
+            if (vidaJugador != null)
+            {
+                vidaJugador.TomarDaño(1); // Reduce 1 punto de vida al jugador
+            }
+        }
+    }
 }
