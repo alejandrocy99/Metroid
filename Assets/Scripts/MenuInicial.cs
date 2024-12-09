@@ -18,4 +18,12 @@ public class MenuInicial : MonoBehaviour
         Application.Quit();
         Debug.Log("El juego se cerrará (solo funciona en una build).");
     }
+
+    public void VolverMenu(){
+        SceneManager.LoadScene("menuInicial");
+    }
+
+    public void IrCreditos(){
+        SceneManager.LoadScene("creditos");
+    }
 }

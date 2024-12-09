@@ -15,7 +15,6 @@ public class Temporizador : MonoBehaviour
     {
         Contador();
 
-        // Debug para mostrar el tiempo restante en cada frame
      
 
         // Actualiza el texto en pantalla
@@ -36,5 +35,9 @@ public class Temporizador : MonoBehaviour
     public float TiempoRestante()
     {
         return Mathf.Max(0, time); // Devuelve el tiempo restante
+    }
+
+    public float TiempoTotal(){
+        return time;
     }
 }

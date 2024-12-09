@@ -26,6 +26,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool enSuelo;
     private bool salto = false;
 
+    [Header("Controlador disparo")]
+    [SerializeField]private Transform controladorDisparo;
+    [SerializeField]private GameObject bala;
+
+    [Header("SONIDO")]
+     private AudioSource audioSource;
+    [SerializeField] private AudioClip audioClip;
 
 
 
@@ -44,6 +51,7 @@ public class PlayerController : MonoBehaviour
     {
         rb2D = GetComponent<Rigidbody2D>();
         animacionJugador = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
     }
     // Update is called once per frame
     void Update()
@@ -54,7 +62,16 @@ public class PlayerController : MonoBehaviour
         {
             salto = true;
         }
+        if (Input.GetButtonDown("Fire1"))
+        {
+            //dispara
+            Disparar();
+        }
 
+    }
+
+    private void Disparar(){
+        Instantiate(bala,controladorDisparo.position,controladorDisparo.rotation);
     }
 
     private void FixedUpdate()
@@ -76,11 +93,11 @@ public class PlayerController : MonoBehaviour
         //suavizar el moviento a la hora de acelerar o frenar
         rb2D.velocity = Vector3.SmoothDamp(rb2D.velocity, velocidadObjeto, ref velocidad, suavizadorDeMovimiento);
 
-        if (mover > 0 && !mirandoDerecha)
+        if (mover > 0 && mirandoDerecha)
         {
             Girar();
         }
-        else if (mover < 0 && mirandoDerecha)
+        else if (mover < 0 && !mirandoDerecha)
         {
             Girar();
         }
@@ -89,6 +106,7 @@ public class PlayerController : MonoBehaviour
         {
             enSuelo = false;
             rb2D.AddForce(new Vector2(0f, fuerzaSalto));
+            audioSource.PlayOneShot(audioClip);
             animacionJugador.Play("jugador-saltando");
         }
     }
@@ -96,9 +114,9 @@ public class PlayerController : MonoBehaviour
     private void Girar()
     {
         mirandoDerecha = !mirandoDerecha;
-        Vector3 escala = transform.localScale;
-        escala.x *= -1;
-        transform.localScale = escala;
+        transform.eulerAngles = new Vector3(0,transform.eulerAngles.y + 180);
+
+        Debug.Log("rotacion" + transform.eulerAngles.y);
     }
 
 
@@ -108,31 +126,6 @@ public class PlayerController : MonoBehaviour
 
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         //Time.timeScale = 0f;
-    }
-
-
-
-    public void QuitarVidas()
-    {
-        if (vulnerable)
-        {
-            vulnerable = false;
-            Nvidas--;
-            if (Nvidas == 0)
-            {
-                FinDelJuego();
-            }
-            Invoke("HacerVunerable", 1f);
-            //    rb2D. = Color.red;
-        }
-
-    }
-
-
-    private void HacerVunerable()
-    {
-        vulnerable = true;
-        //  orientacion.color = Color.white;
     }
 
 

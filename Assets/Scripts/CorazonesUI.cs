@@ -30,7 +30,7 @@ public class CorazonesUI : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "Metroid2.0")
+        if (scene.name == "Metroid2.0" || scene.name == "nivel 2")
         {
             Debug.Log("Escena Metroid2.0 cargada, inicializando corazones.");
             gameObject.SetActive(true);
