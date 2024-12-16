@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/Scenes/creditos.unity
     guid: 5311ea9a1d0333f4e87d57b74163e88f
   - enabled: 1
+    path: Assets/Scenes/nivel 2.unity
+    guid: fca929f548f9cb246a76e4a2df66f0e7
+  - enabled: 1
     path: Assets/Scenes/PantallaFinal.unity
     guid: 176d8552d7419604b982f8654384312d
   m_configObjects: {}

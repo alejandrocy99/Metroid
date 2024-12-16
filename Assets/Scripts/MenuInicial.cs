@@ -23,6 +23,10 @@ public class MenuInicial : MonoBehaviour
         SceneManager.LoadScene("menuInicial");
     }
 
+    public void SiguienteNivel(){
+         SceneManager.LoadScene("nivel 2");
+    }
+
     public void IrCreditos(){
         SceneManager.LoadScene("creditos");
     }

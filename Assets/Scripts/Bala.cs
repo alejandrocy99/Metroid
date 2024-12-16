@@ -11,8 +11,9 @@ public class Bala : MonoBehaviour
     }
 
     private void OnTriggerEnter2D(Collider2D other){
-        if(other.CompareTag("Enemy") && other.CompareTag("Pulpo")){
-            Destroy(gameObject);
+        if(other.CompareTag("Enemy") || other.CompareTag("Pulpo")){
+            Destroy(gameObject); // destruye la bala
+            Destroy(other.gameObject); // destruye el enemigo 
         }
     }
 }
